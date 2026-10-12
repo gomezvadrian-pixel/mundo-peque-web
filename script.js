@@ -221,6 +221,16 @@ document.getElementById('sheetClose').addEventListener('click', closeSheet);
 backdrop.addEventListener('click', closeSheet);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hidden) closeSheet(); });
 
+// Trampa de foco: Tab / Shift+Tab permanecen dentro del modal abierto
+sheet.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || sheet.hidden) return;
+  const f = [...sheet.querySelectorAll('button, a[href]')].filter(el => !el.disabled && el.getClientRects().length);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+
 // Buscador y filtros de la videoteca
 (function(){
   const section = document.getElementById('videos');

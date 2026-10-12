@@ -248,7 +248,20 @@ section[id],div[id]{scroll-margin-top:72px}
 }
 
 /* Bloque 5: temporada */
-.season{background:#fffdf8;border:1px solid var(--line);border-radius:23px;overflow:hidden}
+.season{
+--season-bg:#F4D9B5;--season-accent:#C77B52;--season-accent-ink:#9A5A33;--season-ink:#5C4633;
+background:var(--season-bg);
+border:1px solid #E3BE9E;border:1px solid color-mix(in srgb,var(--season-accent) 45%,var(--season-bg));
+border-top:3px solid var(--season-accent);
+border-radius:23px;overflow:hidden}
+/* Paletas preparadas para futuras temporadas (sin contenido aún) */
+.season[data-season="navidad"]{--season-bg:#DDE8DA;--season-accent:#A84438;--season-accent-ink:#86332B;--season-ink:#33503C;}
+.season[data-season="primavera"]{--season-bg:#E6EDDA;--season-accent:#BE8B95;--season-accent-ink:#96606B;--season-ink:#4C5C3C;}
+.season-intro .kicker{color:var(--season-accent-ink)}
+.season-intro h2{color:var(--season-ink)}
+.season .more{color:var(--season-accent-ink)}
+.season-toggle:hover{border-color:var(--season-accent)}
+.season-archive button{border-color:var(--season-accent)}
 .season-hero img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
 .season-intro{padding:22px 24px 4px}
 .season-intro .kicker{font-size:11px;letter-spacing:2px;font-weight:700;color:#b07a4f;text-transform:uppercase}

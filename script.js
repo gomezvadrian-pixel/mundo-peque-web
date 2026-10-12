@@ -301,6 +301,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
   function paint(key, seasons) {
     const s = seasons[key];
     if (!s) return;
+    document.getElementById('season').dataset.season = key;
     const img = document.getElementById('season-img');
     img.src = s.image; img.alt = s.title;
     document.getElementById('season-title').textContent = s.title;

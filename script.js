@@ -265,9 +265,16 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
     count.textContent = (n === articles.length) ? '' : (n + ' de ' + articles.length + ' vídeos');
     pillsBox.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.f === active));
   }
-  filters.forEach(f => {
+  const fmtSet = ['Todos', 'Largos', 'Shorts'];
+  filters.forEach((f, i) => {
+    if (i === fmtSet.length) {
+      const sep = document.createElement('span');
+      sep.className = 'pills-sep'; sep.setAttribute('aria-hidden', 'true');
+      pillsBox.append(sep);
+    }
     const b = document.createElement('button');
     b.type = 'button'; b.textContent = f; b.dataset.f = f;
+    b.classList.add(fmtSet.includes(f) ? 'pill-fmt' : 'pill-ser');
     b.addEventListener('click', () => { active = f; apply(); });
     pillsBox.append(b);
   });

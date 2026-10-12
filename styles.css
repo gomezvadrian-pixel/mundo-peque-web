@@ -135,8 +135,14 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 .links-card h1 span{font-weight:400}
 .links-motto{color:#8a6f4d;margin:0 0 28px;font-size:15px}
 .links-list{display:grid;gap:14px}
-.link-btn{display:flex;flex-direction:column;gap:2px;background:#fffdf8;border:1px solid var(--line);border-radius:18px;padding:15px 20px;box-shadow:0 6px 16px #5a3a2014;transition:transform .15s}
-.link-btn:hover{transform:translateY(-2px)}
-.link-btn strong{font-size:17px}
-.link-btn small{font-size:13px;color:#8a8178}
-.link-btn.featured{background:linear-gradient(135deg,#c96f4a,#a9502e);border:none;color:#fff;padding:19px 20px}.link-btn.featured small{color:#ffe3cf}
+.link-row{display:flex;align-items:center;gap:15px;background:#fffdf8;border:1px solid var(--line);border-radius:18px;padding:13px 18px;box-shadow:0 6px 16px #5a3a2014;transition:transform .15s;text-align:left}
+.link-row:hover{transform:translateY(-2px)}
+.link-row .ico{flex:0 0 48px;width:48px;height:48px;border-radius:50%;background:#f4e6cf;display:flex;align-items:center;justify-content:center}
+.link-row .ico svg{width:25px;height:25px;display:block}
+.link-row .txt strong{display:block;font-size:16.5px}
+.link-row .txt small{font-size:13px;color:#8a8178}
+.link-yt{border:2px solid #e8a58c;box-shadow:0 12px 28px #c0392b2e;padding:16px 18px}
+.link-yt .ico{background:#fff}
+.link-yt .ico svg{width:34px;height:34px}
+.link-yt .txt strong{font-size:18px}
+.link-yt .go{margin-left:auto;font-size:26px;color:#c0392b;font-weight:700;line-height:1}

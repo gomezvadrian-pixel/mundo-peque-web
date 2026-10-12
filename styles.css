@@ -249,7 +249,7 @@ section[id],div[id]{scroll-margin-top:80px}
 
 /* Bloque 5: temporada */
 .season{
---season-bg:#F8E4CD;--season-accent:#C77B52;--season-accent-ink:#9A5A33;--season-ink:#5C4633;
+--season-bg:#F8E4CD;--season-accent:#C77B52;--season-accent-ink:#9A5A33;--season-ink:#5C4633;--season-card:#F5EAD9;
 background:var(--season-bg);
 border:1px solid #E2B596;border:1px solid color-mix(in srgb,var(--season-accent) 45%,var(--season-bg));
 border-top:3px solid var(--season-accent);
@@ -287,3 +287,5 @@ border-radius:23px;overflow:hidden}
 .season-foot,.season-archive{padding-left:38px;padding-right:38px}
 .season-grid>.season-center{max-width:calc(25% - 9px)}
 }
+
+.season .vcard{background:var(--season-card)}

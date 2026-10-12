@@ -162,3 +162,15 @@ section[id],div[id]{scroll-margin-top:72px}
 .letter-paper figure.pola-float:nth-of-type(even){margin-left:10%;margin-right:auto}
 .letter-paper{padding:40px 24px}
 }
+
+.about-text{max-width:680px;margin:0 0 6px}
+.about-text p{font-size:15px;line-height:1.75;color:#5d5348;margin:0 0 12px}
+.universe-photos{display:flex;gap:12px;justify-content:flex-start;margin:4px 0 6px;flex-wrap:wrap}
+.universe-photos img{width:72px;height:72px;border-radius:50%;object-fit:cover;background:#eee4d9;border:3px solid #fff;box-shadow:0 6px 14px #5a3a2022}
+.pillar-icon{display:inline-flex;width:44px;height:44px;border-radius:50%;background:#f4e6cf;align-items:center;justify-content:center}
+.pillar-icon svg{width:23px;height:23px;display:block}
+.about-cta{text-align:center;margin:36px 0 6px}
+.about-cta .btn{margin-top:0}
+.about-cta-alt{margin:16px 0 0;font-size:14px;color:#6d6156}
+.about-cta-alt a{text-decoration:underline;text-underline-offset:2px}
+@media(max-width:700px){.pillars article{padding:20px}.universe-photos img{width:62px;height:62px}}

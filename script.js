@@ -21,6 +21,29 @@ const personajes = [
   ['Tila', 'assets/personajes/tila.webp']
 ];
 const ids = Object.fromEntries(personajes);
+
+// Descripciones oficiales de los personajes (aprobadas 2026-10-12).
+// Se muestran en la ficha individual de cada personaje.
+const DESCRIPCIONES = {
+'Nico': 'Nico es un pequeño conejo que nos acompaña en aventuras cotidianas llenas de ternura. Con él, hasta las cosas más sencillas pueden convertirse en una bonita historia.',
+'Nina': 'Entre flores y pequeños rincones acogedores, Nina nos invita a descubrir la belleza de los detalles que a veces pasan desapercibidos.',
+'Pau': 'Una tarde de lluvia, una taza de chocolate caliente y un rincón acogedor. Con Pau, los momentos más sencillos tienen algo especial.',
+'Pía': 'Pía nos acompaña en pequeñas historias cotidianas, llenas de detalles para observar, descubrir y disfrutar sin prisa.',
+'Milo': 'Milo nos recuerda que las pequeñas aventuras pueden encontrarse en cualquier rincón. Basta un poco de curiosidad para descubrir algo bonito.',
+'Mila': 'Entre pequeñas creaciones y momentos cotidianos, Mila nos acompaña en historias donde cada detalle tiene su encanto.',
+'Hada': 'Hada nos invita a disfrutar de esos pequeños momentos que dedicamos a cuidarnos, crear y hacer algo bonito para nosotros mismos.',
+'Hugo': 'Con Hugo descubrimos el encanto de preparar algo con nuestras propias manos, disfrutar de las pequeñas tareas y compartir momentos acogedores.',
+'Rita': 'Rita nos acompaña en pequeñas aventuras rodeadas de naturaleza, encuentros entrañables y momentos que invitan a observar con calma.',
+'Roco': 'Con Roco, una actividad sencilla puede convertirse en una historia llena de pequeños descubrimientos y momentos para disfrutar.',
+'Berta': 'Berta nos acompaña en paseos, pequeños descubrimientos y escenas acogedoras donde la naturaleza y las cosas sencillas cobran protagonismo.',
+'Berto': 'Un buen libro, el sonido de la lluvia y un rincón calentito. Berto nos acompaña en esos momentos tranquilos que hacen que una casa se sienta como un hogar.',
+'Bruno': 'Bruno forma parte de las pequeñas historias de Mundo Peque, donde siempre hay espacio para descubrir algo nuevo y disfrutar de los momentos cotidianos.',
+'Lola': 'Entre dibujos, colores y pequeñas creaciones, Lola nos invita a disfrutar del proceso de hacer algo bonito con nuestras propias manos.',
+'Sira': 'Sira nos acompaña en historias llenas de pequeños detalles, donde cada estación y cada rincón pueden esconder algo especial.',
+'Siro': 'Con pinceles, colores y pequeñas ideas, Siro nos invita a descubrir el placer de crear sin prisas y disfrutar de cada paso.',
+'Teo': 'Cuando llega la hora de descansar, Teo nos acompaña en historias suaves, noches acogedoras y pequeños momentos antes de dormir.',
+'Tila': 'Tila nos recuerda lo especiales que pueden ser los pequeños rituales cotidianos: una bebida calentita, un rincón tranquilo y un momento para disfrutar.'
+};
 function setupImage(img, name) {
   const src = ids[name];
   if (!src) { failed(img, name); return; }
@@ -102,7 +125,7 @@ function openSheet(name) {
   img.alt = 'Fotografía original de ' + name;
   img.onerror = () => { img.alt = 'Foto original de ' + name + ' pendiente de cargar'; img.removeAttribute('src'); };
   document.getElementById('sheetName').textContent = name;
-  document.getElementById('sheetDesc').textContent = name + ' forma parte del pequeño universo de Mundo Peque.';
+  document.getElementById('sheetDesc').textContent = DESCRIPCIONES[name] || (name + ' forma parte del pequeño universo de Mundo Peque.');
   document.getElementById('sheetYt').href = 'https://www.youtube.com/@mundopequeconcalma/search?query=' + encodeURIComponent(name);
   const vv = videosPor[name] || [];
   const vbox = document.getElementById('sheetVideos');

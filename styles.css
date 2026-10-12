@@ -312,7 +312,7 @@ border-radius:23px;overflow:hidden}
 
 /* Bloque 7: actividades */
 .activity p{line-height:1.6}
-.activity-link{display:inline-block;margin-top:10px;font-size:13px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3}
+.activity-link{display:inline-block;font-size:13px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3}
 .activities-close{text-align:center;color:#8a7a68;margin:28px auto 0;max-width:520px;line-height:1.65}
 
 @media(max-width:700px){
@@ -321,5 +321,10 @@ border-radius:23px;overflow:hidden}
 .activity img.activity-photo{width:64px;height:64px}
 .activity-titles{flex:1;min-width:0}
 .activity-text{flex:0 0 100%;margin:12px 0 0}
-.activity-link{margin-top:10px}
+.activity-actions .activity-link,.activity-actions .activity-dl{margin-top:0}
 }
+
+/* Bloque 7: descargas */
+.activity-actions{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+.activity-dl{font-size:13px;font-weight:700;color:#6b4a32;text-decoration:none;border-bottom:1px solid #c9a06a}
+.activities-download{text-align:center;margin-top:26px}

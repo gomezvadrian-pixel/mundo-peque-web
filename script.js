@@ -363,19 +363,19 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
 /* Bloque 7: actividades. Para añadir una actividad estacional en el futuro,
    añade un objeto al array ACTIVITIES (emoji, title, who, img, text, link?). */
 const ACTIVITIES = [
-{emoji:'\uD83C\uDF42',title:'Recoger hojas',who:'Hugo',img:'assets/personajes/hugo.webp',
+{emoji:'\uD83C\uDF42',title:'Recoger hojas',who:'Hugo',pdf:'assets/actividades/actividad-recoger-hojas-hugo.pdf',img:'assets/personajes/hugo.webp',
 text:'A Hugo le encantan las peque\u00f1as tareas hechas con calma. Sal a pasear sin prisa y recoge las hojas m\u00e1s bonitas del camino. Obs\u00e9rvalas con calma: sus colores, sus formas y el crujido al pisarlas.'},
-{emoji:'\uD83C\uDFA8',title:'Dibujar lo que ves',who:'Lola',img:'assets/personajes/lola.webp',
+{emoji:'\uD83C\uDFA8',title:'Dibujar lo que ves',who:'Lola',pdf:'assets/actividades/actividad-dibujar-lo-que-ves-lola.pdf',img:'assets/personajes/lola.webp',
 text:'Como Lola entre sus dibujos y colores: si\u00e9ntate junto a la ventana y dibuja lo que veas \u2014un \u00e1rbol, una nube, tu taza\u2014. Sin prisa y sin borrar; lo bonito est\u00e1 en el proceso.'},
-{emoji:'\uD83C\uDF27\uFE0F',title:'Escuchar la lluvia',who:'Berto',img:'assets/personajes/berto.webp',
+{emoji:'\uD83C\uDF27\uFE0F',title:'Escuchar la lluvia',who:'Berto',pdf:'assets/actividades/actividad-escuchar-la-lluvia-berto.pdf',img:'assets/personajes/berto.webp',
 text:'Berto adora el sonido de la lluvia en su rinc\u00f3n calentito. Cuando llueva, ac\u00e9rcate a la ventana, cierra los ojos un momento y escucha. \u00bfQu\u00e9 sonidos descubres? \u00bfLa lluvia suena igual en el cristal que en el tejado?',
 link:{label:'Ver un momento con Berto',url:'https://www.youtube.com/shorts/5cRHngcWIt8'}},
-{emoji:'\uD83C\uDF31',title:'Cuidar una planta',who:'Rita',img:'assets/personajes/rita.webp',
+{emoji:'\uD83C\uDF31',title:'Cuidar una planta',who:'Rita',pdf:'assets/actividades/actividad-cuidar-una-planta-rita.pdf',img:'assets/personajes/rita.webp',
 text:'Rita nos ense\u00f1a a observar la naturaleza con calma. Elige una planta de casa y enc\u00e1rgate de ella: ri\u00e9gala con ayuda de un adulto, qu\u00edtale las hojas secas y observa c\u00f3mo crece d\u00eda a d\u00eda.',
 link:{label:'Ver un momento con Rita',url:'https://www.youtube.com/shorts/Z2zMTTmaZiY'}},
-{emoji:'\uD83C\uDF75',title:'La hora de la merienda',who:'Berta',img:'assets/personajes/berta.webp',
+{emoji:'\uD83C\uDF75',title:'La hora de la merienda',who:'Berta',pdf:'assets/actividades/actividad-hora-de-la-merienda-berta.pdf',img:'assets/personajes/berta.webp',
 text:'Berta sabe que las cosas sencillas se disfrutan sin prisa. Prepara una merienda que te guste, busca un rinc\u00f3n acogedor y comp\u00e1rtela con alguien especial. Sin pantallas, solo ese peque\u00f1o momento juntos.'},
-{emoji:'\uD83D\uDD6F\uFE0F',title:'El ritual de la calma',who:'Hada',img:'assets/personajes/hada.webp',
+{emoji:'\uD83D\uDD6F\uFE0F',title:'El ritual de la calma',who:'Hada',pdf:'assets/actividades/actividad-ritual-de-la-calma-hada.pdf',img:'assets/personajes/hada.webp',
 text:'Hada dedica cada d\u00eda un peque\u00f1o momento para cuidarse. Por la noche, baja la luz, respira despacio tres veces y piensa en algo bonito del d\u00eda. Un ritual para terminar con calma.',
 link:{label:'Ver un momento con Hada',url:'https://www.youtube.com/shorts/1BmgcWZJ7Ns'}}
 ];
@@ -384,6 +384,7 @@ const wrap = document.getElementById('activities');
 if(!wrap) return;
 wrap.innerHTML = ACTIVITIES.map(a => {
 const link = a.link ? `<a class="activity-link" href="${a.link.url}" target="_blank" rel="noopener">${a.link.label} \u2197</a>` : '';
-return `<article class="activity"><img class="activity-photo" src="${a.img}" alt="${a.who}" loading="lazy"><div class="activity-body"><div class="activity-titles"><h3>${a.emoji} ${a.title}</h3><p class="with">con ${a.who}</p></div><p class="activity-text">${a.text}</p>${link}</div></article>`;
+const dl = `<a class="activity-dl" href="${a.pdf}" download>Descargar actividad \u2193</a>`;
+return `<article class="activity"><img class="activity-photo" src="${a.img}" alt="${a.who}" loading="lazy"><div class="activity-body"><div class="activity-titles"><h3>${a.emoji} ${a.title}</h3><p class="with">con ${a.who}</p></div><p class="activity-text">${a.text}</p><div class="activity-actions">${link}${dl}</div></div></article>`;
 }).join('');
 })();

@@ -29,7 +29,7 @@ SEASONS = {
     "halloween": {
         "title": "Un Halloween muy Peque \U0001F383",
         "image": "assets/halloween-pau.jpg",
-        "intro": "La serie «Mundo Peque se disfraza»: un disfraz por personaje, calabazas y un paseo por el pueblo, con toda la ternura de siempre.",
+        "intro": "Disfraces, calabazas y pequeños paseos por el pueblo. Un Halloween lleno de ternura para disfrutar sin prisa. 🎃",
         "search": "halloween",
         "patterns": ["se disfraza", "halloween"],
         "include": ["24tpxbKzjM0", "40dXE_StxxQ"],  # Roco sándwich calavera, Rita huerto de calabazas

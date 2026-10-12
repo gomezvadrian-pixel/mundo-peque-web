@@ -238,3 +238,11 @@ section[id],div[id]{scroll-margin-top:72px}
 .videos .thumb-long{width:112px}
 .videos .vcard h3{font-size:14px}
 }
+
+/* Bloque 4: ajustes finales de aprobación */
+.videos .vcard-short h3{font-size:13px;line-height:1.5}
+.vcard-short .vbody{padding:8px 10px 10px}
+.series-block{margin-bottom:32px}
+@media(max-width:700px){
+.videos .vcard-short h3{font-size:13.5px}
+}

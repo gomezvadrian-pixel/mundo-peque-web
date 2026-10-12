@@ -384,6 +384,6 @@ const wrap = document.getElementById('activities');
 if(!wrap) return;
 wrap.innerHTML = ACTIVITIES.map(a => {
 const link = a.link ? `<a class="activity-link" href="${a.link.url}" target="_blank" rel="noopener">${a.link.label} \u2197</a>` : '';
-return `<article class="activity"><img src="${a.img}" alt="${a.who}" loading="lazy"><div><h3>${a.emoji} ${a.title}</h3><p class="with">con ${a.who}</p><p>${a.text}</p>${link}</div></article>`;
+return `<article class="activity"><img class="activity-photo" src="${a.img}" alt="${a.who}" loading="lazy"><div class="activity-body"><div class="activity-titles"><h3>${a.emoji} ${a.title}</h3><p class="with">con ${a.who}</p></div><p class="activity-text">${a.text}</p>${link}</div></article>`;
 }).join('');
 })();

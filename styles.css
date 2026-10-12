@@ -314,3 +314,12 @@ border-radius:23px;overflow:hidden}
 .activity p{line-height:1.6}
 .activity-link{display:inline-block;margin-top:10px;font-size:13px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3}
 .activities-close{text-align:center;color:#8a7a68;margin:28px auto 0;max-width:520px;line-height:1.65}
+
+@media(max-width:700px){
+.activity{display:flex;flex-wrap:wrap;align-items:center;column-gap:14px}
+.activity-body{display:contents}
+.activity-photo{width:64px;height:64px}
+.activity-titles{flex:1;min-width:0}
+.activity-text{flex:0 0 100%;margin:12px 0 0}
+.activity-link{margin-top:10px}
+}

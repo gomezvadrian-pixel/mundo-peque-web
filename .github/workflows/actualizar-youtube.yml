@@ -1,0 +1,35 @@
+name: Actualizar videoteca
+
+# Cada mañana sincroniza las tarjetas de la videoteca con los últimos vídeos
+# del canal de YouTube (2 por serie y formato). Requiere el secreto
+# YOUTUBE_API_KEY (clave de YouTube Data API v3) en el repositorio.
+# Al hacer push, Cloudflare Pages redespliega solo.
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # 06:00 en invierno / 07:00 en verano (Madrid)
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sincronizar videoteca
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          if [ -z "$YOUTUBE_API_KEY" ]; then
+            echo "Sin YOUTUBE_API_KEY: no hay nada que sincronizar."
+            exit 0
+          fi
+          python scripts/sync_youtube.py
+      - name: Publicar cambios
+        run: |
+          git config user.name "Vaquis"
+          git config user.email "vaquis@mundopequeconcalma.es"
+          git add index.html
+          git diff --cached --quiet && echo "Sin cambios." || (git commit -m "Videoteca actualizada desde YouTube" && git push)

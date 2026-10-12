@@ -21,6 +21,29 @@ const personajes = [
   ['Tila', 'assets/personajes/tila.webp']
 ];
 const ids = Object.fromEntries(personajes);
+
+// Descripciones oficiales de los personajes (aprobadas 2026-10-12).
+// Se muestran en la ficha individual de cada personaje.
+const DESCRIPCIONES = {
+'Nico': 'Nico es un pequeño conejo que nos acompaña en aventuras cotidianas llenas de ternura. Con él, hasta las cosas más sencillas pueden convertirse en una bonita historia.',
+'Nina': 'Entre flores y pequeños rincones acogedores, Nina nos invita a descubrir la belleza de los detalles que a veces pasan desapercibidos.',
+'Pau': 'Una tarde de lluvia, una taza de chocolate caliente y un rincón acogedor. Con Pau, los momentos más sencillos tienen algo especial.',
+'Pía': 'Pía nos acompaña en pequeñas historias cotidianas, llenas de detalles para observar, descubrir y disfrutar sin prisa.',
+'Milo': 'Milo nos recuerda que las pequeñas aventuras pueden encontrarse en cualquier rincón. Basta un poco de curiosidad para descubrir algo bonito.',
+'Mila': 'Entre pequeñas creaciones y momentos cotidianos, Mila nos acompaña en historias donde cada detalle tiene su encanto.',
+'Hada': 'Hada nos invita a disfrutar de esos pequeños momentos que dedicamos a cuidarnos, crear y hacer algo bonito para nosotros mismos.',
+'Hugo': 'Con Hugo descubrimos el encanto de preparar algo con nuestras propias manos, disfrutar de las pequeñas tareas y compartir momentos acogedores.',
+'Rita': 'Rita nos acompaña en pequeñas aventuras rodeadas de naturaleza, encuentros entrañables y momentos que invitan a observar con calma.',
+'Roco': 'Con Roco, una actividad sencilla puede convertirse en una historia llena de pequeños descubrimientos y momentos para disfrutar.',
+'Berta': 'Berta nos acompaña en paseos, pequeños descubrimientos y escenas acogedoras donde la naturaleza y las cosas sencillas cobran protagonismo.',
+'Berto': 'Un buen libro, el sonido de la lluvia y un rincón calentito. Berto nos acompaña en esos momentos tranquilos que hacen que una casa se sienta como un hogar.',
+'Bruno': 'Bruno forma parte de las pequeñas historias de Mundo Peque, donde siempre hay espacio para descubrir algo nuevo y disfrutar de los momentos cotidianos.',
+'Lola': 'Entre dibujos, colores y pequeñas creaciones, Lola nos invita a disfrutar del proceso de hacer algo bonito con nuestras propias manos.',
+'Sira': 'Sira nos acompaña en historias llenas de pequeños detalles, donde cada estación y cada rincón pueden esconder algo especial.',
+'Siro': 'Con pinceles, colores y pequeñas ideas, Siro nos invita a descubrir el placer de crear sin prisas y disfrutar de cada paso.',
+'Teo': 'Cuando llega la hora de descansar, Teo nos acompaña en historias suaves, noches acogedoras y pequeños momentos antes de dormir.',
+'Tila': 'Tila nos recuerda lo especiales que pueden ser los pequeños rituales cotidianos: una bebida calentita, un rincón tranquilo y un momento para disfrutar.'
+};
 function setupImage(img, name) {
   const src = ids[name];
   if (!src) { failed(img, name); return; }
@@ -35,14 +58,15 @@ function failed(img, name) {
   img.replaceWith(el);
 }
 const grid = document.getElementById('characters');
+let lastCard = null;
 personajes.forEach(([name]) => {
   const card = document.createElement('div');
   card.className = 'person';
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
   card.setAttribute('aria-label', 'Ver la ficha de ' + name);
-  card.addEventListener('click', () => openSheet(name));
-  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(name); } });
+  card.addEventListener('click', () => { lastCard = card; openSheet(name); });
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lastCard = card; openSheet(name); } });
   const frame = document.createElement('div');
   frame.className = 'portrait';
   const img = document.createElement('img');
@@ -67,9 +91,11 @@ document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () =
 }));
 
 // Ficha de personaje: sus vídeos + sus wallpapers.
-// Wallpapers futuros: se añaden a WALLPAPERS como 'Nombre': [{src:'assets/wallpapers/nico/nico-1.jpg', alt:'...'}]
-// y aparecen automáticamente en la ficha, con descarga.
+// Wallpapers AUTOMÁTICOS: sube al repo assets/wallpapers/<personaje>-1.jpg, -2.jpg...
+// (p. ej. nico-1.jpg, pia-2.jpg) y aparecen solos en la ficha, con descarga.
+// WALLPAPERS es un override manual opcional: 'Nico': [{src:'assets/wallpapers/nico-1.jpg', alt:'...'}]
 const WALLPAPERS = {};
+const wallSeen = {};
 const HALLOWEEN_VIDEOS = [
   ['Tila', 'Tila se disfraza de diablilla', 'Short de Halloween', 'https://www.youtube.com/shorts/A1_qb7mo6O4', null],
   ['Teo', 'Teo se disfraza de murciélago', 'Short de Halloween', 'https://www.youtube.com/shorts/apH_i1QW1oU', null],
@@ -91,6 +117,40 @@ document.querySelectorAll('#videos article').forEach(a => {
 });
 HALLOWEEN_VIDEOS.forEach(([name, t, meta, u, img]) => { if (videosPor[name]) videosPor[name].push({ t, u, img, meta }); });
 
+// Mapa personaje -> vídeos, generado por scripts/sync_youtube.py (character-videos.json).
+// Si no existe o falla la carga, se usa la asociación por DOM como antes.
+let cmapPromise = null;
+function loadCharacterMap() {
+  if (!cmapPromise) {
+    cmapPromise = fetch('assets/character-videos.json')
+      .then(r => { if (!r.ok) throw new Error('sin JSON'); return r.json(); })
+      .catch(() => null);
+  }
+  return cmapPromise;
+}
+function sheetVideoRow(v) {
+  const row = document.createElement('div');
+  row.className = 'sheet-video';
+  const media = v.img
+    ? '<img class="sv-thumb" src="' + v.img + '" alt="" loading="lazy">'
+    : '<div class="sv-play">▶</div>';
+  row.innerHTML = media + '<div><strong></strong><span></span></div>';
+  row.querySelector('strong').textContent = v.t;
+  row.querySelector('span').textContent = v.meta;
+  const a = document.createElement('a');
+  a.href = v.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver ↗';
+  row.append(a);
+  return row;
+}
+function renderSheetVideos(name, vv) {
+  const vbox = document.getElementById('sheetVideos');
+  vbox.innerHTML = '';
+  if (!vv.length) {
+    vbox.innerHTML = '<div class="sheet-empty">' + name + ' aún no tiene vídeos propios.<br>Muy pronto ♡</div>';
+    return;
+  }
+  vv.forEach(v => vbox.append(sheetVideoRow(v)));
+}
 const sheet = document.getElementById('charSheet');
 const backdrop = document.getElementById('sheetBackdrop');
 function openSheet(name) {
@@ -99,45 +159,48 @@ function openSheet(name) {
   img.alt = 'Fotografía original de ' + name;
   img.onerror = () => { img.alt = 'Foto original de ' + name + ' pendiente de cargar'; img.removeAttribute('src'); };
   document.getElementById('sheetName').textContent = name;
-  document.getElementById('sheetDesc').textContent = name + ' forma parte del pequeño universo de Mundo Peque.';
+  document.getElementById('sheetDesc').textContent = DESCRIPCIONES[name] || (name + ' forma parte del pequeño universo de Mundo Peque.');
   document.getElementById('sheetYt').href = 'https://www.youtube.com/@mundopequeconcalma/search?query=' + encodeURIComponent(name);
-  const vv = videosPor[name] || [];
-  const vbox = document.getElementById('sheetVideos');
-  vbox.innerHTML = '';
-  if (!vv.length) {
-    vbox.innerHTML = '<div class="sheet-empty">' + name + ' aún no tiene vídeos propios.<br>Muy pronto ♡</div>';
-  }
-  vv.forEach(v => {
-    const row = document.createElement('div');
-    row.className = 'sheet-video';
-    const media = v.img
-      ? '<img class="sv-thumb" src="' + v.img + '" alt="" loading="lazy">'
-      : '<div class="sv-play">▶</div>';
-    row.innerHTML = media + '<div><strong></strong><span></span></div>';
-    row.querySelector('strong').textContent = v.t;
-    row.querySelector('span').textContent = v.meta;
-    const a = document.createElement('a');
-    a.href = v.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver ↗';
-    row.append(a);
-    vbox.append(row);
+  renderSheetVideos(name, videosPor[name] || []);
+  loadCharacterMap().then(cmap => {
+    if (!cmap || !cmap.characters) return;
+    if (sheet.hidden) return;
+    if (document.getElementById('sheetName').textContent !== name) return;
+    const list = cmap.characters[name] || [];
+    if (list.length) {
+      renderSheetVideos(name, list.map(e => ({t: e.title, u: e.url, img: e.thumb, meta: e.label})));
+    }
   });
-  const walls = WALLPAPERS[name] || [];
   const wbox = document.getElementById('sheetWalls');
+  const wtitle = document.getElementById('sheetWallsTitle');
   wbox.innerHTML = '';
-  if (!walls.length) {
-    wbox.innerHTML = '<div class="sheet-empty">Los wallpapers de ' + name + ' están en camino 🖼️<br>Vuelve pronto.</div>';
-  }
-  walls.forEach(w => {
+  wbox.hidden = true;
+  if (wtitle) wtitle.hidden = true;
+  const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (!wallSeen[slug]) wallSeen[slug] = {};
+  function addWall(src, label) {
+    if (wbox.hidden) { wbox.hidden = false; if (wtitle) wtitle.hidden = false; }
     const a = document.createElement('a');
-    a.href = w.src; a.download = ''; a.className = 'sheet-video';
-    a.innerHTML = '<img class="sv-thumb" src="' + w.src + '" alt="">';
+    a.href = src;
+    a.download = slug + '-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.jpg';
+    a.className = 'sheet-video'; a.target = '_blank'; a.rel = 'noopener';
+    const im = document.createElement('img');
+    im.className = 'sv-thumb'; im.src = src; im.alt = ''; im.loading = 'lazy';
     const d = document.createElement('div');
-    const s = document.createElement('strong'); s.textContent = w.alt || ('Wallpaper de ' + name);
-    d.append(s); a.append(d);
+    const s = document.createElement('strong'); s.textContent = label;
+    d.append(s);
     const dl = document.createElement('span'); dl.textContent = 'Descargar ↓'; dl.style.fontWeight = '700';
-    a.append(dl);
+    a.append(im, d, dl);
     wbox.append(a);
-  });
+  }
+  (WALLPAPERS[name] || []).forEach((w, i) => addWall(w.src, w.alt || ('Wallpaper ' + (i + 1) + ' de ' + name)));
+  for (let k = 1; k <= 8; k++) {
+    const src = 'assets/wallpapers/' + slug + '-' + k + '.jpg';
+    if (wallSeen[slug][src]) { addWall(src, 'Wallpaper ' + k + ' de ' + name); continue; }
+    const probe = new Image();
+    probe.onload = () => { wallSeen[slug][src] = true; addWall(src, 'Wallpaper ' + k + ' de ' + name); };
+    probe.src = src;
+  }
   sheet.hidden = false;
   backdrop.hidden = false;
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -152,6 +215,7 @@ function closeSheet() {
   backdrop.classList.remove('show');
   document.body.style.overflow = '';
   setTimeout(() => { sheet.hidden = true; backdrop.hidden = true; }, 320);
+  if (lastCard && lastCard.focus) lastCard.focus();
 }
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 backdrop.addEventListener('click', closeSheet);

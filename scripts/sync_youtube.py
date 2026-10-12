@@ -17,7 +17,7 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 
 CHANNEL_ID = "UCQBPndD_Nx5noA62U4sABPg"
 SHORT_MAX_SECONDS = 110  # Short: menos de 1 min 50 s; el resto, largos
@@ -26,8 +26,17 @@ PER_SERIES = 2
 SERIES = ["cocina", "creacion", "autocuidado", "hogar", "dormir", "descubre"]
 BLOCK_ID = {s: f"serie-{s}" for s in SERIES}
 
+# Personajes oficiales (mismo orden que la galería de la web)
+PERSONAJES = ["Nico", "Nina", "Pau", "Pía", "Milo", "Mila", "Hada", "Hugo",
+              "Rita", "Roco", "Berta", "Berto", "Bruno", "Lola", "Sira",
+              "Siro", "Teo", "Tila"]
+PER_CHARACTER = 6       # vídeos recientes por personaje en su ficha
+MIN_ITEMS = 100         # la videoteca siempre ve al menos estos (comportamiento actual)
+MAX_ITEMS = 500         # tope de paginación para cubrir personajes poco frecuentes
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, "index.html")
+CHAR_JSON = os.path.join(ROOT, "assets", "character-videos.json")
 
 
 def classify(title):
@@ -47,6 +56,11 @@ def classify(title):
     if "descubre:" in t:
         return "descubre"
     return None
+
+
+def name_in_title(name, title):
+    """True si el nombre del personaje aparece como palabra completa (insensible a mayúsculas)."""
+    return re.search(r"\b" + re.escape(name) + r"\b", title, re.IGNORECASE) is not None
 
 
 def parse_duration(iso):
@@ -75,15 +89,26 @@ def fetch_videos(api_key):
     ch = api("channels", {"part": "contentDetails", "id": CHANNEL_ID, "key": api_key})
     uploads = ch["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
     items, page = [], None
+    counts = {n: 0 for n in PERSONAJES}
     while True:
         p = {"part": "snippet", "playlistId": uploads, "maxResults": 50, "key": api_key}
         if page:
             p["pageToken"] = page
         res = api("playlistItems", p)
-        items.extend(res.get("items", []))
+        batch = res.get("items", [])
+        items.extend(batch)
+        for it in batch:
+            t = it["snippet"]["title"]
+            for n in PERSONAJES:
+                if counts[n] < PER_CHARACTER and name_in_title(n, t):
+                    counts[n] += 1
         page = res.get("nextPageToken")
-        if not page or len(items) >= 100:
+        if not page:
             break
+        if len(items) >= MAX_ITEMS:
+            break
+        if len(items) >= MIN_ITEMS and all(c >= PER_CHARACTER for c in counts.values()):
+            break  # todos los personajes tienen 6: no pedir más páginas
     ids = [it["snippet"]["resourceId"]["videoId"] for it in items]
     durations = {}
     for i in range(0, len(ids), 50):
@@ -121,14 +146,45 @@ def fixture():
         {"id": "pqr678STU_-", "title": "Berto se duerme: lluvia suave 🌙✨ | Mundo Peque", "published": "2026-10-07T10:00:00Z", "seconds": 3600},
         {"id": "stu901VWX_-", "title": "Berta descubre: setas de otoño 🌲✨ | Mundo Peque", "published": "2026-10-06T10:00:00Z", "seconds": 240},
         {"id": "vwx234YZA_-", "title": "Tila se disfraza: brujita 🎃✨ | Mundo Peque", "published": "2026-10-05T10:00:00Z", "seconds": 40},
+        {"id": "nico01AAA_-", "title": "La receta de Nico: galletas de avena 🍪✨ | Mundo Peque", "published": "2026-10-04T10:00:00Z", "seconds": 45},
+        {"id": "nico02BBB_-", "title": "Nico y Rita: tostadas con forma 🍞✨ | Mundo Peque", "published": "2026-10-03T10:00:00Z", "seconds": 52},
+        {"id": "nico03CCC_-", "title": "un paseo con nico en minúsculas 🍂 | Mundo Peque", "published": "2026-10-02T10:00:00Z", "seconds": 40},
+        {"id": "pia01DDD__-", "title": "Pía descubre: hojas de otoño 🍂✨ | Mundo Peque", "published": "2026-10-01T10:00:00Z", "seconds": 48},
+        {"id": "hugo01EEE_-", "title": "Hugo en casa: prepara pan casero 🏠✨ | Mundo Peque", "published": "2026-09-30T10:00:00Z", "seconds": 300},
+        {"id": "teo01FFF__-", "title": "Teo se duerme: arrullo suave 🌙✨ | Mundo Peque", "published": "2026-09-29T10:00:00Z", "seconds": 3600},
+        {"id": "nina01GGG_-", "title": "Nina crea: flores de papel 🌸✨ | Mundo Peque", "published": "2026-09-28T10:00:00Z", "seconds": 200},
+        {"id": "trampa01H_-", "title": "Verónica y la nicotina: charla seria 🎙️ | Mundo Peque", "published": "2026-09-27T10:00:00Z", "seconds": 600},
     ]
+
+
+def video_url(vid, is_short):
+    return (f"https://www.youtube.com/shorts/{vid}" if is_short
+            else f"https://www.youtube.com/watch?v={vid}")
+
+
+def build_character_map(videos):
+    """Hasta PER_CHARACTER vídeos recientes por personaje (los más recientes primero)."""
+    cmap = {n: [] for n in PERSONAJES}
+    for v in videos:  # ya ordenados de más a menos reciente
+        for n in PERSONAJES:
+            if len(cmap[n]) < PER_CHARACTER and name_in_title(n, v["title"]):
+                is_short = v["seconds"] < SHORT_MAX_SECONDS
+                cmap[n].append({
+                    "id": v["id"],
+                    "title": v["title"],
+                    "url": video_url(v["id"], is_short),
+                    "thumb": f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg",
+                    "label": "Short" if is_short else fmt_duration(v["seconds"]),
+                    "published": v["published"],
+                })
+    return cmap
 
 
 def card(v, is_short):
     vid = html.escape(v["id"], quote=True)
     title = html.escape(v["title"])
     meta = "Short" if is_short else fmt_duration(v["seconds"])
-    url = f"https://www.youtube.com/shorts/{vid}" if is_short else f"https://www.youtube.com/watch?v={vid}"
+    url = video_url(vid, is_short)
     thumb = f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
     return (
         f'<article><div class="thumb"><img src="{thumb}" alt="{title}" loading="lazy"></div>'
@@ -200,6 +256,17 @@ def main():
     doc = doc[: si + len(start_m)] + "\n" + new_region + "\n" + doc[ei:]
     with open(INDEX, "w", encoding="utf-8") as f:
         f.write(doc)
+
+    cmap = build_character_map(videos)
+    payload = {"generated": datetime.now(timezone.utc).isoformat(),
+               "characters": cmap}
+    os.makedirs(os.path.dirname(CHAR_JSON), exist_ok=True)
+    tmp = CHAR_JSON + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
+    os.replace(tmp, CHAR_JSON)  # atómico: nunca deja un JSON a medias
+    con_videos = sum(1 for n in PERSONAJES if cmap[n])
+    print(f"character-videos.json: {con_videos}/18 personajes con vídeos.")
 
     total = sum(len(picked[s][f]) for s in SERIES for f in ("largo", "corto"))
     print(f"Videoteca regenerada: {total} tarjetas.")

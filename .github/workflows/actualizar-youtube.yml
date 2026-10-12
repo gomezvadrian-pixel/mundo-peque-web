@@ -33,5 +33,5 @@ jobs:
         run: |
           git config user.name "Vaquis"
           git config user.email "vaquis@mundopequeconcalma.es"
-          git add index.html assets/character-videos.json
+          git add index.html assets/character-videos.json assets/seasons.json
           git diff --cached --quiet && echo "Sin cambios." || (git commit -m "Videoteca actualizada desde YouTube" && git push)

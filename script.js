@@ -284,3 +284,78 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
   });
   apply();
 })();
+
+/* Bloque 5: temporadas */
+(function () {
+  const grid = document.getElementById('season-grid');
+  if (!grid) return;
+  const SHOW = 8;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function card(v) {
+    const isShort = v.label === 'Short';
+    const kind = isShort ? 'short' : 'long';
+    return '<article class="vcard vcard-' + kind + '"><a class="video-link" href="' + v.url + '" target="_blank" rel="noopener">'
+      + '<span class="thumb thumb-' + kind + '"><img src="' + v.thumb + '" alt="' + esc(v.title) + '" loading="lazy"></span>'
+      + '<span class="vbody"><h3>' + esc(v.title) + '</h3><p>' + esc(v.label) + '</p></span></a></article>';
+  }
+  function paint(key, seasons) {
+    const s = seasons[key];
+    if (!s) return;
+    document.getElementById('season').dataset.season = key;
+    const img = document.getElementById('season-img');
+    img.src = s.image; img.alt = s.title;
+    document.getElementById('season-title').textContent = s.title;
+    document.getElementById('season-text').textContent = s.intro;
+    document.getElementById('season-yt').href = 'https://www.youtube.com/@mundopequeconcalma/search?query=' + encodeURIComponent(s.search || key);
+    const vids = s.videos || [];
+    grid.classList.remove('season-open');
+    grid.innerHTML = vids.map((v, i) => {
+      const wide = v.label === 'Short' ? '' : ' season-cell-wide';
+      const extra = i >= SHOW ? ' season-extra' : '';
+      return '<div class="season-cell' + wide + extra + '">' + card(v) + '</div>';
+    }).join('');
+    const toggle = document.getElementById('season-toggle');
+    toggle.hidden = vids.length <= SHOW;
+    toggle.textContent = 'Ver todos';
+    toggle.onclick = () => {
+      const open = grid.classList.toggle('season-open');
+      toggle.textContent = open ? 'Ver menos' : 'Ver todos';
+      centerLone();
+    };
+    const arch = document.getElementById('season-archive');
+    const others = Object.keys(seasons).filter(k => k !== key);
+    arch.hidden = others.length === 0;
+    arch.innerHTML = others.length
+      ? '<span>Temporadas anteriores:</span> ' + others.map(k =>
+        '<button type="button" data-season="' + k + '">' + esc(seasons[k].title) + '</button>').join('')
+      : '';
+    arch.querySelectorAll('button').forEach(b => b.addEventListener('click', () => paint(b.dataset.season, seasons)));
+    centerLone();
+  }
+  function centerLone() {
+    grid.querySelectorAll('.season-center').forEach(c => c.classList.remove('season-center'));
+    const cols = window.matchMedia('(max-width:700px)').matches ? 2 : 4;
+    const visible = Array.from(grid.children).filter(c =>
+      !c.classList.contains('season-extra') || grid.classList.contains('season-open'));
+    let group = [];
+    const flush = () => {
+      if (group.length % cols === 1) group[group.length - 1].classList.add('season-center');
+      group = [];
+    };
+    visible.forEach(c => {
+      if (c.classList.contains('season-cell-wide')) flush();
+      else group.push(c);
+    });
+    flush();
+  }
+  let rsz;
+  window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(centerLone, 200); });
+  fetch('assets/seasons.json')
+    .then(r => { if (!r.ok) throw 0; return r.json(); })
+    .then(d => {
+      const seasons = d.seasons || {};
+      const feat = seasons[d.featured] ? d.featured : Object.keys(seasons)[0];
+      if (feat) paint(feat, seasons);
+    })
+    .catch(() => { /* sin JSON se mantiene el contenido estático */ });
+})();

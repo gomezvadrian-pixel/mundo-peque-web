@@ -174,6 +174,23 @@ def fixture():
         {"id": "trampa01H_-", "title": "Verónica y la nicotina: charla seria 🎙️ | Mundo Peque", "published": "2026-09-27T10:00:00Z", "seconds": 600},
     ]
 
+# IDs ficticios usados SOLO en modo prueba (--test / sin API key).
+# Jamás deben publicarse: la guarda de main() detiene todo si aparecen.
+FIXTURE_IDS = {
+    "abc123XYZ_-", "def456UVW_-", "ghi789RST_-", "hugo01EEE_-",
+    "jkl012MNO_-", "mno345PQR_-", "nico01AAA_-", "nico02BBB_-",
+    "nico03CCC_-", "nina01GGG_-", "pia01DDD__-", "pqr678STU_-",
+    "stu901VWX_-", "teo01FFF__-", "trampa01H_-", "vwx234YZA_-",
+}
+
+
+def assert_no_fixture(picked):
+    """Detiene el despliegue si hay IDs ficticios entre los vídeos elegidos."""
+    fakes = {v["id"] for s in picked for f in ("largo", "corto") for v in picked[s][f]} & FIXTURE_IDS
+    if fakes:
+        sys.exit(f"ABORTADO: IDs ficticios detectados {sorted(fakes)}; se conservan los datos reales.")
+
+
 
 def video_url(vid, is_short):
     return (f"https://www.youtube.com/shorts/{vid}" if is_short
@@ -304,11 +321,17 @@ def main():
     test = "--test" in sys.argv
     api_key = os.environ.get("YOUTUBE_API_KEY", "")
     if test or not api_key:
+        # Modo prueba: valida que la generación funciona SIN tocar los archivos
+        # reales. Así nunca se publican datos de ejemplo: se conservan los
+        # últimos datos reales disponibles.
         print("Modo prueba: usando datos de ejemplo." if test else "Sin YOUTUBE_API_KEY: modo prueba.")
         videos = fixture()
-    else:
-        videos = fetch_videos(api_key)
-        print(f"{len(videos)} vídeos leídos del canal.")
+        new_region, picked = build_block(videos)
+        total = sum(len(picked[s][f]) for s in SERIES for f in ("largo", "corto"))
+        print(f"Modo prueba OK: {total} tarjetas generadas; archivos reales intactos.")
+        return
+    videos = fetch_videos(api_key)
+    print(f"{len(videos)} vídeos leídos del canal.")
 
     with open(INDEX, encoding="utf-8") as f:
         doc = f.read()
@@ -329,6 +352,7 @@ def main():
         heads[serie] = m.group(1).rstrip("\n")
 
     new_region, picked = build_block(videos)
+    assert_no_fixture(picked)
     for serie in SERIES:
         new_region = new_region.replace(f"@@HEAD-{serie}@@", heads[serie])
 

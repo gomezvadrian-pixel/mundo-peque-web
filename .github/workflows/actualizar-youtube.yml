@@ -29,6 +29,13 @@ jobs:
             exit 0
           fi
           python scripts/sync_youtube.py
+      - name: Verificar datos reales
+        run: |
+          if grep -qE 'abc123XYZ_-|def456UVW_-|ghi789RST_-|hugo01EEE_-|jkl012MNO_-|mno345PQR_-|nico01AAA_-|nico02BBB_-|nico03CCC_-|nina01GGG_-|pia01DDD__-|pqr678STU_-|stu901VWX_-|teo01FFF__-|trampa01H_-|vwx234YZA_-' index.html assets/character-videos.json assets/seasons.json; then
+            echo "ERROR: IDs ficticios detectados; se detiene el despliegue y se conservan los datos reales."
+            exit 1
+          fi
+          echo "Verificación OK: sin IDs ficticios."
       - name: Publicar cambios
         run: |
           git config user.name "Vaquis"

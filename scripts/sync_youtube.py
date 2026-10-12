@@ -22,6 +22,20 @@ from datetime import datetime, timezone
 CHANNEL_ID = "UCQBPndD_Nx5noA62U4sABPg"
 SHORT_MAX_SECONDS = 110  # Short: menos de 1 min 50 s; el resto, largos
 
+# Excepciones manuales a la heurística por duración: vídeos que YouTube NO
+# considera Shorts aunque duren menos de 1:50 (p. ej. horizontales).
+# True = forzar Short, False = forzar largo.
+SHORT_OVERRIDES = {
+    "Q-yUj7jzYx8": False,  # Pau en casa: día lluvioso con chocolate (horizontal)
+}
+
+
+def is_short_video(v):
+    """¿Es un Short de YouTube? Override manual primero, duración después."""
+    if v["id"] in SHORT_OVERRIDES:
+        return SHORT_OVERRIDES[v["id"]]
+    return v["seconds"] < SHORT_MAX_SECONDS
+
 # Temporadas (Bloque 5). La destacada se configura expresamente en
 # SEASON_FEATURED: nunca cambia sola por fecha. "patterns" recoge
 # automáticamente; "include"/"exclude" resuelven casos ambiguos por id.
@@ -184,6 +198,12 @@ FIXTURE_IDS = {
 }
 
 
+# Mínimo de tarjetas para considerar válida una sincronización.
+# Por debajo de este umbral se aborta y se conservan los datos reales
+# (protege ante respuestas vacías o recortadas de la API).
+MIN_TARJETAS = 12
+
+
 def assert_no_fixture(picked):
     """Detiene el despliegue si hay IDs ficticios entre los vídeos elegidos."""
     fakes = {v["id"] for s in picked for f in ("largo", "corto") for v in picked[s][f]} & FIXTURE_IDS
@@ -198,7 +218,7 @@ def video_url(vid, is_short):
 
 
 def video_entry(v):
-    is_short = v["seconds"] < SHORT_MAX_SECONDS
+    is_short = is_short_video(v)
     return {
         "id": v["id"],
         "title": v["title"],
@@ -259,7 +279,7 @@ def build_character_map(videos):
     for v in videos:  # ya ordenados de más a menos reciente
         for n in PERSONAJES:
             if len(cmap[n]) < PER_CHARACTER and name_in_title(n, v["title"]):
-                is_short = v["seconds"] < SHORT_MAX_SECONDS
+                is_short = is_short_video(v)
                 cmap[n].append({
                     "id": v["id"],
                     "title": v["title"],
@@ -295,7 +315,7 @@ def build_block(videos):
         serie = classify(v["title"])
         if not serie:
             continue
-        fmt = "corto" if v["seconds"] < SHORT_MAX_SECONDS else "largo"
+        fmt = "corto" if is_short_video(v) else "largo"
         if len(picked[serie][fmt]) < PER_SERIES:
             picked[serie][fmt].append(v)
 
@@ -353,6 +373,9 @@ def main():
 
     new_region, picked = build_block(videos)
     assert_no_fixture(picked)
+    total_picked = sum(len(picked[s][f]) for s in SERIES for f in ("largo", "corto"))
+    if total_picked < MIN_TARJETAS:
+        sys.exit(f"ABORTADO: solo {total_picked} tarjetas (mínimo {MIN_TARJETAS}); se conservan los datos reales.")
     for serie in SERIES:
         new_region = new_region.replace(f"@@HEAD-{serie}@@", heads[serie])
 

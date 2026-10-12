@@ -117,6 +117,40 @@ document.querySelectorAll('#videos article').forEach(a => {
 });
 HALLOWEEN_VIDEOS.forEach(([name, t, meta, u, img]) => { if (videosPor[name]) videosPor[name].push({ t, u, img, meta }); });
 
+// Mapa personaje -> vídeos, generado por scripts/sync_youtube.py (character-videos.json).
+// Si no existe o falla la carga, se usa la asociación por DOM como antes.
+let cmapPromise = null;
+function loadCharacterMap() {
+  if (!cmapPromise) {
+    cmapPromise = fetch('assets/character-videos.json')
+      .then(r => { if (!r.ok) throw new Error('sin JSON'); return r.json(); })
+      .catch(() => null);
+  }
+  return cmapPromise;
+}
+function sheetVideoRow(v) {
+  const row = document.createElement('div');
+  row.className = 'sheet-video';
+  const media = v.img
+    ? '<img class="sv-thumb" src="' + v.img + '" alt="" loading="lazy">'
+    : '<div class="sv-play">▶</div>';
+  row.innerHTML = media + '<div><strong></strong><span></span></div>';
+  row.querySelector('strong').textContent = v.t;
+  row.querySelector('span').textContent = v.meta;
+  const a = document.createElement('a');
+  a.href = v.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver ↗';
+  row.append(a);
+  return row;
+}
+function renderSheetVideos(name, vv) {
+  const vbox = document.getElementById('sheetVideos');
+  vbox.innerHTML = '';
+  if (!vv.length) {
+    vbox.innerHTML = '<div class="sheet-empty">' + name + ' aún no tiene vídeos propios.<br>Muy pronto ♡</div>';
+    return;
+  }
+  vv.forEach(v => vbox.append(sheetVideoRow(v)));
+}
 const sheet = document.getElementById('charSheet');
 const backdrop = document.getElementById('sheetBackdrop');
 function openSheet(name) {
@@ -127,25 +161,15 @@ function openSheet(name) {
   document.getElementById('sheetName').textContent = name;
   document.getElementById('sheetDesc').textContent = DESCRIPCIONES[name] || (name + ' forma parte del pequeño universo de Mundo Peque.');
   document.getElementById('sheetYt').href = 'https://www.youtube.com/@mundopequeconcalma/search?query=' + encodeURIComponent(name);
-  const vv = videosPor[name] || [];
-  const vbox = document.getElementById('sheetVideos');
-  vbox.innerHTML = '';
-  if (!vv.length) {
-    vbox.innerHTML = '<div class="sheet-empty">' + name + ' aún no tiene vídeos propios.<br>Muy pronto ♡</div>';
-  }
-  vv.forEach(v => {
-    const row = document.createElement('div');
-    row.className = 'sheet-video';
-    const media = v.img
-      ? '<img class="sv-thumb" src="' + v.img + '" alt="" loading="lazy">'
-      : '<div class="sv-play">▶</div>';
-    row.innerHTML = media + '<div><strong></strong><span></span></div>';
-    row.querySelector('strong').textContent = v.t;
-    row.querySelector('span').textContent = v.meta;
-    const a = document.createElement('a');
-    a.href = v.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver ↗';
-    row.append(a);
-    vbox.append(row);
+  renderSheetVideos(name, videosPor[name] || []);
+  loadCharacterMap().then(cmap => {
+    if (!cmap || !cmap.characters) return;
+    if (sheet.hidden) return;
+    if (document.getElementById('sheetName').textContent !== name) return;
+    const list = cmap.characters[name] || [];
+    if (list.length) {
+      renderSheetVideos(name, list.map(e => ({t: e.title, u: e.url, img: e.thumb, meta: e.label})));
+    }
   });
   const wbox = document.getElementById('sheetWalls');
   const wtitle = document.getElementById('sheetWallsTitle');

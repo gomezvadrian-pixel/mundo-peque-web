@@ -246,3 +246,29 @@ section[id],div[id]{scroll-margin-top:72px}
 @media(max-width:700px){
 .videos .vcard-short h3{font-size:13.5px}
 }
+
+/* Bloque 5: temporada */
+.season{background:#fffdf8;border:1px solid var(--line);border-radius:23px;overflow:hidden}
+.season-hero img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.season-intro{padding:22px 24px 6px}
+.season-intro .kicker{font-size:11px;letter-spacing:2px;font-weight:700;color:#b07a4f;text-transform:uppercase}
+.season-intro h2{font-size:30px;margin:8px 0 6px}
+.season-intro p{color:#6b5f52;line-height:1.6;margin:0;max-width:520px}
+.season-grid{padding:14px 24px 4px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.season-cell-wide{grid-column:1/-1}
+.season-extra{display:none}
+.season-open .season-extra{display:block}
+.season-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px 22px;flex-wrap:wrap}
+.season-toggle{border:1px solid var(--line);background:#fff;border-radius:25px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+.season-toggle:hover{border-color:#c08552}
+.season-archive{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;font-size:13px;color:#8a7a68}
+.season-archive button{border:1px solid var(--line);background:#f6efe4;border-radius:20px;padding:7px 14px;font:inherit;font-size:12px;cursor:pointer;color:var(--ink)}
+.season-archive button:hover{border-color:#c08552}
+@media(min-width:701px){
+.season-hero{display:grid;grid-template-columns:1fr 1.1fr;align-items:stretch}
+.season-hero img{order:2;height:100%;min-height:300px}
+.season-intro{padding:40px 38px;align-self:center}
+.season-intro h2{font-size:36px}
+.season-grid{grid-template-columns:repeat(4,1fr);padding:20px 38px 4px}
+.season-foot,.season-archive{padding-left:38px;padding-right:38px}
+}

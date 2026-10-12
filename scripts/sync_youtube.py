@@ -21,6 +21,23 @@ from datetime import datetime, timezone
 
 CHANNEL_ID = "UCQBPndD_Nx5noA62U4sABPg"
 SHORT_MAX_SECONDS = 110  # Short: menos de 1 min 50 s; el resto, largos
+
+# Temporadas (Bloque 5). La destacada se configura expresamente en
+# SEASON_FEATURED: nunca cambia sola por fecha. "patterns" recoge
+# automáticamente; "include"/"exclude" resuelven casos ambiguos por id.
+SEASONS = {
+    "halloween": {
+        "title": "Un Halloween muy Peque \U0001F383",
+        "image": "assets/halloween-pau.jpg",
+        "intro": "La serie «Mundo Peque se disfraza»: un disfraz por personaje, calabazas y un paseo por el pueblo, con toda la ternura de siempre.",
+        "search": "halloween",
+        "patterns": ["se disfraza", "halloween"],
+        "include": ["24tpxbKzjM0", "40dXE_StxxQ"],  # Roco sándwich calavera, Rita huerto de calabazas
+        "exclude": [],
+    },
+}
+SEASON_FEATURED = "halloween"
+SEASON_MAX_STORE = 30  # se guardan más de los que se muestran (la web enseña 8 + "Ver todos")
 PER_SERIES = 2
 
 SERIES = ["cocina", "creacion", "autocuidado", "hogar", "dormir", "descubre"]
@@ -37,6 +54,7 @@ MAX_ITEMS = 500         # tope de paginación para cubrir personajes poco frecue
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, "index.html")
 CHAR_JSON = os.path.join(ROOT, "assets", "character-videos.json")
+SEASON_JSON = os.path.join(ROOT, "assets", "seasons.json")
 
 
 def classify(title):
@@ -45,7 +63,7 @@ def classify(title):
         return None  # Halloween va en el bloque especial, manual
     if "la receta de" in t:
         return "cocina"
-    if "crea:" in t:
+    if "sira crea" in t:
         return "creacion"
     if "el momento de" in t:
         return "autocuidado"
@@ -162,6 +180,62 @@ def video_url(vid, is_short):
             else f"https://www.youtube.com/watch?v={vid}")
 
 
+def video_entry(v):
+    is_short = v["seconds"] < SHORT_MAX_SECONDS
+    return {
+        "id": v["id"],
+        "title": v["title"],
+        "url": video_url(v["id"], is_short),
+        "thumb": f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg",
+        "label": "Short" if is_short else fmt_duration(v["seconds"]),
+        "published": v["published"],
+    }
+
+
+def build_seasons(videos, api_key=None):
+    """Vídeos por temporada, del más reciente al más antiguo.
+    No se limita a los mostrados: la web decide cuántos enseña."""
+    seasons = {}
+    by_id = {v["id"]: v for v in videos}
+    for key, cfg in SEASONS.items():
+        pats = [p.lower() for p in cfg.get("patterns", [])]
+        matched = []
+        for v in videos:  # ordenados de más a menos reciente
+            if v["id"] in cfg.get("exclude", []):
+                continue
+            t = v["title"].lower()
+            if v["id"] in cfg.get("include", []) or any(p in t for p in pats):
+                matched.append(video_entry(v))
+        # inclusiones manuales ausentes del escaneo (vídeos antiguos): pedir metadatos
+        missing = [i for i in cfg.get("include", []) if i not in by_id]
+        if missing and api_key:
+            det = api("videos", {"part": "snippet,contentDetails",
+                                 "id": ",".join(missing[:50]), "key": api_key})
+            for it in det.get("items", []):
+                sn = it["snippet"]
+                v = {"id": it["id"], "title": sn["title"],
+                     "published": sn["publishedAt"],
+                     "seconds": parse_duration(it["contentDetails"]["duration"])}
+                if v["id"] not in cfg.get("exclude", []):
+                    matched.append(video_entry(v))
+        seen, uniq = set(), []
+        for e in matched:
+            if e["id"] not in seen:
+                seen.add(e["id"])
+                uniq.append(e)
+        uniq.sort(key=lambda e: e["published"], reverse=True)
+        if not uniq:
+            continue  # no mostrar temporadas vacías
+        seasons[key] = {
+            "title": cfg["title"],
+            "image": cfg["image"],
+            "intro": cfg["intro"],
+            "search": cfg.get("search", ""),
+            "videos": uniq[:SEASON_MAX_STORE],
+        }
+    return {"featured": SEASON_FEATURED, "seasons": seasons}
+
+
 def build_character_map(videos):
     """Hasta PER_CHARACTER vídeos recientes por personaje (los más recientes primero)."""
     cmap = {n: [] for n in PERSONAJES}
@@ -272,6 +346,14 @@ def main():
     os.replace(tmp, CHAR_JSON)  # atómico: nunca deja un JSON a medias
     con_videos = sum(1 for n in PERSONAJES if cmap[n])
     print(f"character-videos.json: {con_videos}/18 personajes con vídeos.")
+
+    seasons = build_seasons(videos, api_key or None)
+    tmp = SEASON_JSON + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(seasons, f, ensure_ascii=False)
+    os.replace(tmp, SEASON_JSON)  # atómico
+    for k, s in seasons["seasons"].items():
+        print(f"seasons.json: {k}: {len(s['videos'])} vídeos.")
 
     total = sum(len(picked[s][f]) for s in SERIES for f in ("largo", "corto"))
     print(f"Videoteca regenerada: {total} tarjetas.")

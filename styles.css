@@ -193,3 +193,14 @@ section[id],div[id]{scroll-margin-top:72px}
 .born-photos img{width:68px;height:68px}
 .about-end h3{font-size:21px}
 }
+
+.refuge-box{background:#f9f1de;border-radius:20px;padding:30px;margin:8px 0 4px}
+.refuge-box::after{content:"";display:block;clear:both}
+.refuge-box .subhead{margin-top:0}
+.refuge-box p{font-size:15px;line-height:1.75;color:#4c4438;margin:0 0 12px}
+.refuge-box p:last-child{margin-bottom:0}
+.refuge-photo{float:right;width:130px;height:130px;border-radius:50%;object-fit:cover;background:#eee4d9;border:4px solid #fff;box-shadow:0 8px 18px #5a3a2022;margin:4px 0 14px 20px}
+@media(max-width:700px){
+.refuge-box{padding:24px 20px}
+.refuge-photo{width:88px;height:88px;margin:0 0 10px 12px}
+}

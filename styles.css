@@ -128,3 +128,4 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 .carta-footer{color:#f3e7cb;text-align:center;padding:34px 20px 44px}
 .carta-footer a{color:#f3e7cb}
 @media(max-width:600px){.letter-paper{padding:44px 26px;font-size:16px}.sprig{width:56px}}
+.carta-illust{max-width:300px;margin:30px auto 6px;background:#fffdf6;padding:12px 12px 18px;box-shadow:0 14px 30px #140d0655;transform:rotate(-1.5deg)}.carta-illust img{width:100%;display:block;background:#eee4d9}

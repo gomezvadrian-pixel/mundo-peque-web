@@ -42,7 +42,7 @@ El workflow `.github/workflows/actualizar-youtube.yml` se ejecuta cada mañana
    Autocuidado, «en casa:» → Hogar cozy, «se duerme» → Dormir,
    «descubre:» → Descubre; «se disfraza» se excluye, va en el bloque
    especial de Halloween que es manual).
-3. Separa largos y shorts por duración (≤ 3 min = Short).
+3. Separa largos y shorts por duración (menos de 1:50 = Short, el resto = largo).
 4. Elige los 2 más recientes de cada serie y formato y regenera las tarjetas
    en `index.html` (solo entre las marcas `VIDEOTECA-AUTO`).
 5. Si hay cambios, hace commit y push; Cloudflare redespliega solo.

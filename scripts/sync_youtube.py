@@ -20,7 +20,7 @@ import urllib.request
 from datetime import datetime
 
 CHANNEL_ID = "UCQBPndD_Nx5noA62U4sABPg"
-SHORT_MAX_SECONDS = 180  # YouTube Shorts: hasta 3 minutos
+SHORT_MAX_SECONDS = 110  # Short: menos de 1 min 50 s; el resto, largos
 PER_SERIES = 2
 
 SERIES = ["cocina", "creacion", "autocuidado", "hogar", "dormir", "descubre"]
@@ -143,7 +143,7 @@ def build_block(videos):
         serie = classify(v["title"])
         if not serie:
             continue
-        fmt = "corto" if v["seconds"] <= SHORT_MAX_SECONDS else "largo"
+        fmt = "corto" if v["seconds"] < SHORT_MAX_SECONDS else "largo"
         if len(picked[serie][fmt]) < PER_SERIES:
             picked[serie][fmt].append(v)
 

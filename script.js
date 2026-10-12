@@ -320,6 +320,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
     toggle.onclick = () => {
       const open = grid.classList.toggle('season-open');
       toggle.textContent = open ? 'Ver menos' : 'Ver todos';
+      centerLone();
     };
     const arch = document.getElementById('season-archive');
     const others = Object.keys(seasons).filter(k => k !== key);
@@ -329,7 +330,26 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hid
         '<button type="button" data-season="' + k + '">' + esc(seasons[k].title) + '</button>').join('')
       : '';
     arch.querySelectorAll('button').forEach(b => b.addEventListener('click', () => paint(b.dataset.season, seasons)));
+    centerLone();
   }
+  function centerLone() {
+    grid.querySelectorAll('.season-center').forEach(c => c.classList.remove('season-center'));
+    const cols = window.matchMedia('(max-width:700px)').matches ? 2 : 4;
+    const visible = Array.from(grid.children).filter(c =>
+      !c.classList.contains('season-extra') || grid.classList.contains('season-open'));
+    let group = [];
+    const flush = () => {
+      if (group.length % cols === 1) group[group.length - 1].classList.add('season-center');
+      group = [];
+    };
+    visible.forEach(c => {
+      if (c.classList.contains('season-cell-wide')) flush();
+      else group.push(c);
+    });
+    flush();
+  }
+  let rsz;
+  window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(centerLone, 200); });
   fetch('assets/seasons.json')
     .then(r => { if (!r.ok) throw 0; return r.json(); })
     .then(d => {

@@ -146,7 +146,7 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 .link-yt .ico svg{width:28px;height:28px}
 .links-motto{margin-bottom:10px}
 .links-filo{color:#9a7c58;font-size:12.5px;font-style:italic;margin:0 0 22px;line-height:1.5}
-section[id],div[id]{scroll-margin-top:92px}
+section[id],div[id]{scroll-margin-top:100px}
 .nav-group{display:contents}.nav-group-title{display:none}
 @media(max-width:700px){
 .top nav.open .nav-group{display:flex;flex-direction:column}
@@ -154,7 +154,7 @@ section[id],div[id]{scroll-margin-top:92px}
 .top nav.open .nav-group:first-child .nav-group-title{padding-top:2px}
 .top nav.open .nav-group + .nav-group{border-top:1px solid #ecdfcd;margin-top:12px}
 .top nav.open a{padding:8px 0}
-section[id],div[id]{scroll-margin-top:72px}
+section[id],div[id]{scroll-margin-top:80px}
 }
 @media(max-width:600px){
 .letter-paper .pola-float{float:none;width:min(210px,60vw);margin-top:26px;margin-bottom:26px}
@@ -249,9 +249,9 @@ section[id],div[id]{scroll-margin-top:72px}
 
 /* Bloque 5: temporada */
 .season{
---season-bg:#F4D9B5;--season-accent:#C77B52;--season-accent-ink:#9A5A33;--season-ink:#5C4633;
+--season-bg:#F8E4CD;--season-accent:#C77B52;--season-accent-ink:#9A5A33;--season-ink:#5C4633;
 background:var(--season-bg);
-border:1px solid #E3BE9E;border:1px solid color-mix(in srgb,var(--season-accent) 45%,var(--season-bg));
+border:1px solid #E2B596;border:1px solid color-mix(in srgb,var(--season-accent) 45%,var(--season-bg));
 border-top:3px solid var(--season-accent);
 border-radius:23px;overflow:hidden}
 /* Paletas preparadas para futuras temporadas (sin contenido aún) */
@@ -271,6 +271,7 @@ border-radius:23px;overflow:hidden}
 .season-cell-wide{grid-column:1/-1}
 .season-extra{display:none}
 .season-open .season-extra{display:block}
+.season-grid>.season-center{grid-column:1/-1;justify-self:center;width:100%;max-width:calc(50% - 6px)}
 .season-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px 22px;flex-wrap:wrap}
 .season-toggle{border:1px solid var(--line);background:#fff;border-radius:25px;padding:9px 18px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
 .season-toggle:hover{border-color:#c08552}
@@ -284,4 +285,5 @@ border-radius:23px;overflow:hidden}
 .season-intro h2{font-size:36px}
 .season-grid{grid-template-columns:repeat(4,1fr);padding:10px 38px 4px}
 .season-foot,.season-archive{padding-left:38px;padding-right:38px}
+.season-grid>.season-center{max-width:calc(25% - 9px)}
 }

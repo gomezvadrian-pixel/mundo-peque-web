@@ -332,4 +332,4 @@ border-radius:23px;overflow:hidden}
 /* Bloque 8: carta */
 .back-link{font-size:13px;color:#8a7a68;text-decoration:none;white-space:nowrap}
 .carta-cta{text-align:center;margin:20px 0 6px}
-.carta-cta a{font-size:14px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3}
+.carta-cta a{font-size:14px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3;white-space:nowrap}

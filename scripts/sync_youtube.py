@@ -45,7 +45,7 @@ def classify(title):
         return None  # Halloween va en el bloque especial, manual
     if "la receta de" in t:
         return "cocina"
-    if "sira crea" in t:
+    if "crea:" in t:
         return "creacion"
     if "el momento de" in t:
         return "autocuidado"

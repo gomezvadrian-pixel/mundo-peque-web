@@ -35,14 +35,15 @@ function failed(img, name) {
   img.replaceWith(el);
 }
 const grid = document.getElementById('characters');
+let lastCard = null;
 personajes.forEach(([name]) => {
   const card = document.createElement('div');
   card.className = 'person';
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
   card.setAttribute('aria-label', 'Ver la ficha de ' + name);
-  card.addEventListener('click', () => openSheet(name));
-  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(name); } });
+  card.addEventListener('click', () => { lastCard = card; openSheet(name); });
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lastCard = card; openSheet(name); } });
   const frame = document.createElement('div');
   frame.className = 'portrait';
   const img = document.createElement('img');
@@ -123,10 +124,11 @@ function openSheet(name) {
   });
   const walls = WALLPAPERS[name] || [];
   const wbox = document.getElementById('sheetWalls');
+  const wtitle = document.getElementById('sheetWallsTitle');
   wbox.innerHTML = '';
-  if (!walls.length) {
-    wbox.innerHTML = '<div class="sheet-empty">Los wallpapers de ' + name + ' están en camino 🖼️<br>Vuelve pronto.</div>';
-  }
+  const showWalls = walls.length > 0;
+  wbox.hidden = !showWalls;
+  if (wtitle) wtitle.hidden = !showWalls;
   walls.forEach(w => {
     const a = document.createElement('a');
     a.href = w.src; a.download = ''; a.className = 'sheet-video';
@@ -152,6 +154,7 @@ function closeSheet() {
   backdrop.classList.remove('show');
   document.body.style.overflow = '';
   setTimeout(() => { sheet.hidden = true; backdrop.hidden = true; }, 320);
+  if (lastCard && lastCard.focus) lastCard.focus();
 }
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 backdrop.addEventListener('click', closeSheet);

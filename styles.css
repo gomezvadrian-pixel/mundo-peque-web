@@ -110,7 +110,7 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 @media(max-width:600px){.wood-sign h1{font-size:30px}.carta-hero{padding:44px 20px 52px}}
 .carta-main-single{max-width:780px;margin:0 auto;padding:44px 24px 60px}.letter-illustrated::after{content:"";display:block;clear:both}.pola-float{width:168px;margin:10px 0 18px}.pola-float.right{float:right;margin-left:24px}.pola-float.left{float:left;margin-right:24px}@media(max-width:600px){.pola-float{width:122px}.pola-float.right{margin-left:14px}.pola-float.left{margin-right:14px}}.carta-page{background:#241a10}
 .carta-bg{position:fixed;inset:0;background:url('assets/carta-fondo.jpg') center/cover no-repeat;z-index:-1}
-.carta-top{background:#fffdf8ee}
+.carta-top{background:#fffdf8}
 .carta-hero{background:transparent;text-align:center;padding:56px 24px 8px}
 .letter-paper{position:relative;background:linear-gradient(175deg,#faf4e3,#f3e7cb);border-radius:8px;box-shadow:0 24px 60px #140d06cc,inset 0 0 70px #b99a5e26;padding:60px 56px;max-width:720px;margin:36px auto 0;font-size:17px;line-height:1.75;color:#4a3b28}
 .letter-paper::after{content:"";display:block;clear:both}

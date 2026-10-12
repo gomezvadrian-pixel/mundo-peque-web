@@ -139,3 +139,4 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 .link-btn:hover{transform:translateY(-2px)}
 .link-btn strong{font-size:17px}
 .link-btn small{font-size:13px;color:#8a8178}
+.link-btn.featured{background:linear-gradient(135deg,#c96f4a,#a9502e);border:none;color:#fff;padding:19px 20px}.link-btn.featured small{color:#ffe3cf}

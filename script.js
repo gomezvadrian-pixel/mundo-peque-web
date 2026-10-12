@@ -68,9 +68,11 @@ document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () =
 }));
 
 // Ficha de personaje: sus vídeos + sus wallpapers.
-// Wallpapers futuros: se añaden a WALLPAPERS como 'Nombre': [{src:'assets/wallpapers/nico/nico-1.jpg', alt:'...'}]
-// y aparecen automáticamente en la ficha, con descarga.
+// Wallpapers AUTOMÁTICOS: sube al repo assets/wallpapers/<personaje>-1.jpg, -2.jpg...
+// (p. ej. nico-1.jpg, pia-2.jpg) y aparecen solos en la ficha, con descarga.
+// WALLPAPERS es un override manual opcional: 'Nico': [{src:'assets/wallpapers/nico-1.jpg', alt:'...'}]
 const WALLPAPERS = {};
+const wallSeen = {};
 const HALLOWEEN_VIDEOS = [
   ['Tila', 'Tila se disfraza de diablilla', 'Short de Halloween', 'https://www.youtube.com/shorts/A1_qb7mo6O4', null],
   ['Teo', 'Teo se disfraza de murciélago', 'Short de Halloween', 'https://www.youtube.com/shorts/apH_i1QW1oU', null],
@@ -122,24 +124,36 @@ function openSheet(name) {
     row.append(a);
     vbox.append(row);
   });
-  const walls = WALLPAPERS[name] || [];
   const wbox = document.getElementById('sheetWalls');
   const wtitle = document.getElementById('sheetWallsTitle');
   wbox.innerHTML = '';
-  const showWalls = walls.length > 0;
-  wbox.hidden = !showWalls;
-  if (wtitle) wtitle.hidden = !showWalls;
-  walls.forEach(w => {
+  wbox.hidden = true;
+  if (wtitle) wtitle.hidden = true;
+  const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (!wallSeen[slug]) wallSeen[slug] = {};
+  function addWall(src, label) {
+    if (wbox.hidden) { wbox.hidden = false; if (wtitle) wtitle.hidden = false; }
     const a = document.createElement('a');
-    a.href = w.src; a.download = ''; a.className = 'sheet-video';
-    a.innerHTML = '<img class="sv-thumb" src="' + w.src + '" alt="">';
+    a.href = src;
+    a.download = slug + '-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.jpg';
+    a.className = 'sheet-video'; a.target = '_blank'; a.rel = 'noopener';
+    const im = document.createElement('img');
+    im.className = 'sv-thumb'; im.src = src; im.alt = ''; im.loading = 'lazy';
     const d = document.createElement('div');
-    const s = document.createElement('strong'); s.textContent = w.alt || ('Wallpaper de ' + name);
-    d.append(s); a.append(d);
+    const s = document.createElement('strong'); s.textContent = label;
+    d.append(s);
     const dl = document.createElement('span'); dl.textContent = 'Descargar ↓'; dl.style.fontWeight = '700';
-    a.append(dl);
+    a.append(im, d, dl);
     wbox.append(a);
-  });
+  }
+  (WALLPAPERS[name] || []).forEach((w, i) => addWall(w.src, w.alt || ('Wallpaper ' + (i + 1) + ' de ' + name)));
+  for (let k = 1; k <= 8; k++) {
+    const src = 'assets/wallpapers/' + slug + '-' + k + '.jpg';
+    if (wallSeen[slug][src]) { addWall(src, 'Wallpaper ' + k + ' de ' + name); continue; }
+    const probe = new Image();
+    probe.onload = () => { wallSeen[slug][src] = true; addWall(src, 'Wallpaper ' + k + ' de ' + name); };
+    probe.src = src;
+  }
   sheet.hidden = false;
   backdrop.hidden = false;
   requestAnimationFrame(() => requestAnimationFrame(() => {

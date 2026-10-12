@@ -211,3 +211,38 @@ section[id],div[id]{scroll-margin-top:72px}
 .sheet-media img{width:100%;height:100%;object-fit:cover;display:block}
 .person:focus-visible{outline:2px solid #657d69;outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.sheet,.sheet-backdrop{transition:none}}
+
+/* Bloque 4: videoteca compacta */
+.videos-longs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.videos-shorts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.videos .vcard{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.videos .vcard .video-link{display:flex;width:100%;height:100%;margin:0;padding:0;background:none;border:0;border-radius:0;text-decoration:none;color:inherit;font-weight:400}
+.vcard-long .video-link{gap:12px;align-items:center;padding:10px}
+.videos .thumb-long{width:128px;flex:none;height:auto;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#e9ded3}
+.videos .thumb-short{height:auto;aspect-ratio:4/3;overflow:hidden;background:#e9ded3}
+.vcard-short .video-link{flex-direction:column;align-items:stretch}
+.vbody{min-width:0;flex:1}
+.videos .vcard h3{font-size:15px;line-height:1.35;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.videos .vcard p{font-size:12px;color:#766c60;margin:0}
+.vcard-short .vbody{padding:10px 12px 12px}
+.videos .vcard-short h3{font-size:13px}
+.vcard-short p{display:none}
+.vcard:focus-within{outline:2px solid #657d69;outline-offset:2px}
+/* Filtros: formato vs series */
+.pills{align-items:center}
+.pills button.pill-fmt{background:#e7eadf;font-weight:700;border-color:#d9d2c4}
+.pills-sep{width:1px;align-self:stretch;background:var(--line);margin:6px 2px}
+@media(max-width:700px){
+.videos-longs{grid-template-columns:1fr;gap:12px}
+.videos-shorts{grid-template-columns:repeat(2,1fr);gap:12px}
+.videos .thumb-long{width:112px}
+.videos .vcard h3{font-size:14px}
+}
+
+/* Bloque 4: ajustes finales de aprobación */
+.videos .vcard-short h3{font-size:13px;line-height:1.5}
+.vcard-short .vbody{padding:8px 10px 10px}
+.series-block{margin-bottom:32px}
+@media(max-width:700px){
+.videos .vcard-short h3{font-size:13.5px}
+}

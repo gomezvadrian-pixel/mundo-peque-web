@@ -45,7 +45,7 @@ def classify(title):
         return None  # Halloween va en el bloque especial, manual
     if "la receta de" in t:
         return "cocina"
-    if "sira crea" in t:
+    if "crea:" in t:
         return "creacion"
     if "el momento de" in t:
         return "autocuidado"
@@ -181,15 +181,20 @@ def build_character_map(videos):
 
 
 def card(v, is_short):
+    """Tarjeta compacta (Bloque 4): toda la tarjeta es el enlace.
+    Largos: horizontal con miniatura 16:9. Shorts: vertical con miniatura 4:3
+    (las miniaturas de YT son 4:3 nativas: asi no se recorta ni se deforma nada)."""
     vid = html.escape(v["id"], quote=True)
     title = html.escape(v["title"])
     meta = "Short" if is_short else fmt_duration(v["seconds"])
     url = video_url(vid, is_short)
     thumb = f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+    kind = "short" if is_short else "long"
     return (
-        f'<article><div class="thumb"><img src="{thumb}" alt="{title}" loading="lazy"></div>'
-        f"<h3>{title}</h3><p>{meta}</p>"
-        f'<a class="video-link" href="{url}" target="_blank" rel="noopener">Ver en YouTube ↗</a></article>'
+        f'<article class="vcard vcard-{kind}"><a class="video-link" href="{url}" target="_blank" rel="noopener">'
+        f'<span class="thumb thumb-{kind}"><img src="{thumb}" alt="{title}" loading="lazy"></span>'
+        f'<span class="vbody"><h3>{title}</h3><p>{meta}</p></span>'
+        f"</a></article>"
     )
 
 
@@ -214,8 +219,8 @@ def build_block(videos):
         parts.append(
             f'<div class="series-block" id="{BLOCK_ID[serie]}">\n'
             f"@@HEAD-{serie}@@\n"
-            f'<p class="sub-label">VÍDEOS</p><div class="videos">\n{group(serie, "largo")}\n</div>\n'
-            f'<p class="sub-label">SHORTS</p><div class="videos">\n{group(serie, "corto")}\n</div>\n'
+            f'<p class="sub-label">VÍDEOS</p><div class="videos videos-longs">\n{group(serie, "largo")}\n</div>\n'
+            f'<p class="sub-label">SHORTS</p><div class="videos videos-shorts">\n{group(serie, "corto")}\n</div>\n'
             "</div>"
         )
     return "\n".join(parts), picked

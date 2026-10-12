@@ -309,3 +309,8 @@ border-radius:23px;overflow:hidden}
 .story-card{grid-template-columns:240px 1fr}
 .story-cover{height:100%;min-height:320px}
 }
+
+/* Bloque 7: actividades */
+.activity p{line-height:1.6}
+.activity-link{display:inline-block;margin-top:10px;font-size:13px;color:#9A5A33;text-decoration:none;border-bottom:1px solid #e8d3b3}
+.activities-close{text-align:center;color:#8a7a68;margin:28px auto 0;max-width:520px;line-height:1.65}

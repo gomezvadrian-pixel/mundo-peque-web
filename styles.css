@@ -89,9 +89,9 @@ footer nav.legal a:hover{color:#a86955}
 .wood-heart{font-size:22px}
 .wood-sign.small{margin-top:20px;padding:14px 32px;transform:rotate(1.5deg)}
 .wood-sign.small p{margin:0;font-size:16px;line-height:1.5}
-.carta-main{max-width:1180px;margin:0 auto;padding:44px 24px 60px}
-.carta-layout{display:grid;grid-template-columns:190px 1fr 190px;gap:30px;align-items:start}
-.polas{display:grid;gap:28px;padding-top:24px}
+
+
+
 .pola{background:#fff;padding:10px 10px 30px;margin:0;box-shadow:0 10px 22px #3a2a1a22;position:relative}
 .pola:nth-child(odd){transform:rotate(-3deg)}
 .pola:nth-child(even){transform:rotate(2.5deg)}
@@ -106,5 +106,6 @@ mark{background:linear-gradient(transparent 58%,#ffe6a3 58%);padding:0 3px;color
 .phil-text strong{font-size:17px}
 .phil-text small{font-size:13px;color:#8a8178}
 .phil-arrow{margin-left:auto;font-size:30px;color:#a86955}
-@media(max-width:900px){.carta-layout{grid-template-columns:1fr}.polas{grid-template-columns:repeat(3,1fr);padding-top:0}.letter{max-width:720px;margin:0 auto}}
-@media(max-width:600px){.polas{grid-template-columns:repeat(2,1fr)}.wood-sign h1{font-size:30px}.carta-hero{padding:44px 20px 52px}}
+
+@media(max-width:600px){.wood-sign h1{font-size:30px}.carta-hero{padding:44px 20px 52px}}
+.carta-main-single{max-width:780px;margin:0 auto;padding:44px 24px 60px}.letter-illustrated::after{content:"";display:block;clear:both}.pola-float{width:168px;margin:10px 0 18px}.pola-float.right{float:right;margin-left:24px}.pola-float.left{float:left;margin-right:24px}@media(max-width:600px){.pola-float{width:122px}.pola-float.right{margin-left:14px}.pola-float.left{margin-right:14px}}
